@@ -1,0 +1,19 @@
+services:
+  airflow:
+    image: apache/airflow:2.9.3
+    container_name: airflow_standalone
+    ports:
+      - "8080:8080"
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    volumes:
+      - ../airflow_dags:/opt/airflow/dags
+      - ../:/opt/project
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    command: >
+      bash -c "
+      airflow db migrate &&
+      airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com || true &&
+      airflow standalone
+      "
