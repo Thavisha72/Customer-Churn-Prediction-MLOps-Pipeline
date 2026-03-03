@@ -7,10 +7,10 @@ services:
     environment:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
     volumes:
-      - ../airflow_dags:/opt/airflow/dags
-      - ../:/opt/project
-      - ./logs:/opt/airflow/logs
-      - ./plugins:/opt/airflow/plugins
+      - ./airflow_dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./:/opt/project
     command: >
       bash -c "
       airflow db migrate &&
