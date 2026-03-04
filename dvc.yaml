@@ -1,6 +1,6 @@
 stages:
   data_ingestion:
-    cmd: python src/data_ingestion.py
+    cmd: .venv/bin/python src/data_ingestion.py
     deps:
       - src/data_ingestion.py
       - data/raw/Churn prediction DataSet.csv
@@ -8,7 +8,7 @@ stages:
       - data/raw/ingested.csv
 
   preprocessing:
-    cmd: python src/preprocessing.py
+    cmd: .venv/bin/python src/preprocessing.py
     deps:
       - src/preprocessing.py
       - data/raw/ingested.csv
@@ -19,7 +19,7 @@ stages:
       - data/processed/y_test.csv
 
   training:
-    cmd: python src/train.py
+    cmd: .venv/bin/python src/train.py
     deps:
       - src/train.py
       - data/processed/X_train.csv
@@ -28,7 +28,7 @@ stages:
       - models/best_model.joblib
 
   evaluation:
-    cmd: python src/evaluate.py
+    cmd: .venv/bin/python src/evaluate.py
     deps:
       - src/evaluate.py
       - models/best_model.joblib
