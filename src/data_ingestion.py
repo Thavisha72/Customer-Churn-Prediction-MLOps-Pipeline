@@ -1,29 +1,25 @@
-from pathlib import Path
 import pandas as pd
+import os
+import shutil
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-RAW_INPUT = PROJECT_ROOT / "data" / "raw" / "Churn prediction DataSet.csv"
-RAW_OUTPUT = PROJECT_ROOT / "data" / "raw" / "ingested.csv"
-
-
-def main():
-    if not RAW_INPUT.exists():
-        raise FileNotFoundError(f"Raw dataset not found at: {RAW_INPUT}")
-
-    df = pd.read_csv(RAW_INPUT)
-
-    # Basic validation required for pipeline sanity
-    required_cols = {"Churn", "TotalCharges", "MonthlyCharges", "tenure"}
-    missing = required_cols - set(df.columns)
-    if missing:
-        raise ValueError(f"Missing required columns: {sorted(missing)}")
-
-    RAW_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(RAW_OUTPUT, index=False)
-    print(f"[data_ingestion] Saved ingested dataset -> {RAW_OUTPUT} | rows={len(df)} cols={len(df.columns)}")
-
+def ingest_data():
+    raw_path = "data/raw/Churn Prediction DataSet.csv"
+    output_path = "data/raw/churn_raw.csv"
+    
+    print("Starting data ingestion...")
+    
+    # Load dataset
+    df = pd.read_csv(raw_path)
+    
+    print(f"Dataset loaded: {df.shape[0]} rows, {df.shape[1]} columns")
+    print(f"Columns: {list(df.columns)}")
+    print(f"Churn distribution:\n{df['Churn'].value_counts()}")
+    
+    # Save as working copy
+    df.to_csv(output_path, index=False)
+    print(f"Data saved to {output_path}")
+    
+    return df
 
 if __name__ == "__main__":
-    main()
+    ingest_data()

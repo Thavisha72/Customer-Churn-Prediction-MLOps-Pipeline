@@ -1,24 +1,38 @@
 services:
-  mlflow:
-    image: ghcr.io/mlflow/mlflow:latest
-    container_name: mlflow_server
-    ports:
-      - "5000:5000"
-    command: >
-      mlflow server
-      --host 0.0.0.0
-      --port 5000
-      --backend-store-uri sqlite:////mlflow/mlflow.db
-      --default-artifact-root /mlflow/artifacts
-    volumes:
-      - ./mlflow:/mlflow
-
-  churn-api:
+  airflow:
     build: .
-    container_name: churn_api
+    user: airflow
+    entrypoint: [ "/usr/bin/dumb-init", "--" ]
+    command: [ "airflow", "standalone" ]
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+      - AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080
+      - AIRFLOW__WEBSERVER__BASE_URL=http://localhost:8080
+      - DAGSHUB_USER_TOKEN=2f492d16c9f3729846e8182222c83ca131cd3918
+      - DAGSHUB_REPO_OWNER=Thavisha72
+      - DAGSHUB_REPO_NAME=Customer-Churn-Prediction-Pipeline
+      - MLFLOW_TRACKING_USERNAME=Thavisha72
+      - MLFLOW_TRACKING_PASSWORD=2f492d16c9f3729846e8182222c83ca131cd3918
+      - MLFLOW_TRACKING_URI=https://dagshub.com/Thavisha72/Customer-Churn-Prediction-Pipeline.mlflow
+    volumes:
+      - ./airflow_dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+      - ./models:/opt/airflow/models
+      - airflow_db:/opt/airflow
+    ports:
+      - "8080:8080"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    volumes:
+      - ./models:/app/models
     ports:
       - "8000:8000"
-    depends_on:
-      - mlflow
-    environment:
-      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+volumes:
+  airflow_db:

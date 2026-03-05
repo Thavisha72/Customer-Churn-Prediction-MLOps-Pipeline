@@ -1,243 +1,172 @@
-Customer Churn Prediction – End-to-End MLOps Pipeline
-📌 Project Overview
+# Customer Churn Prediction – End-to-End MLOps Pipeline
 
-This project implements a complete MLOps pipeline for predicting customer churn using the Telco Customer Churn dataset.
-
-The system is fully reproducible, modular, containerized, and production-ready.
+## 📌 Project Overview
+This project implements a complete MLOps pipeline for predicting customer churn using a Telco Customer Churn dataset. The system is modular, containerized, and production-ready.
 
 It includes:
+✅ **MLflow & DagsHub** – Experiment tracking & Model Registry
+✅ **Airflow** – Workflow orchestration
+✅ **FastAPI** – Model deployment (REST API)
+✅ **Docker Compose** – Multi-container orchestration (Airflow + API)
+✅ **Scikit-Learn & XGBoost** – Machine Learning models
 
-✅ DVC – Data & pipeline versioning
+## 🏗 System Architecture
 
-✅ MLflow – Experiment tracking
-
-✅ Airflow – Workflow orchestration
-
-✅ FastAPI – Model deployment (REST API)
-
-✅ Docker – Containerization
-
-✅ Git – Version control
-
-🏗 System Architecture
-Raw Data
-   ↓
-DVC Pipeline
-   ├── data_ingestion
-   ├── preprocessing
-   ├── training (MLflow logging)
-   └── evaluation
-          ↓
-Best Model Saved
-          ↓
-FastAPI (Dockerized)
-          ↓
+```text
+Raw Data (data/raw/)
+       ↓
+Airflow Orchestration (churn_prediction_pipeline)
+   ├── 1. data_ingestion.py
+   ├── 2. data_validation
+   ├── 3. preprocessing.py (Outputs scaler.pkl)
+   ├── 4. train.py (Logs to DagsHub MLflow -> Outputs best_model.pkl)
+   ├── 5. evaluate.py
+   └── 6. model_registration
+       ↓
+FastAPI App (Dockerized)
+       ↓
 REST API Endpoint (/predict)
-📂 Project Structure
+```
+
+## 📂 Project Structure
+```text
 Customer-Churn-Prediction/
 │
-├── data/
+├── data/                    # Raw and processed datasets
 │   ├── raw/
 │   └── processed/
 │
-├── src/
+├── src/                     # Core ML scripts
 │   ├── data_ingestion.py
 │   ├── preprocessing.py
 │   ├── train.py
 │   └── evaluate.py
 │
-├── models/
-├── reports/
-├── api/
+├── models/                  # Saved artifacts (.pkl)
+│   ├── best_model.pkl
+│   └── scaler.pkl
+│
+├── api/                     # FastAPI deployment
 │   └── main.py
 │
-├── airflow_dags/
+├── airflow_dags/            # Airflow DAGs
 │   └── churn_dag.py
 │
-├── dvc.yaml
-├── Dockerfile
-├── docker-compose.yaml
-├── requirements.txt
-└── README.md
-🧠 Machine Learning Models
+├── Dockerfile               # Airflow Custom Image
+├── Dockerfile.api           # FastAPI Custom Image
+├── docker-compose.yaml      # Multi-container setup (Airflow + API)
+└── requirements.txt
+```
 
-The following models are trained and compared:
+## 🧠 Machine Learning Models
+The pipeline trains and compares the following models:
+- **Logistic Regression**
+- **Random Forest**
+- **XGBoost Classifier**
 
-Logistic Regression
+Metrics Tracked (Logged to DagsHub MLflow):
+- Accuracy, Precision, Recall, F1-score, ROC-AUC
 
-Random Forest
+The best-performing model based on F1-Score is automatically saved as `models/best_model.pkl`.
 
-XGBoost / Gradient Boosting
+---
 
-Evaluation Metrics:
+## ⚙️ Setup Instructions
 
-Accuracy
-
-Precision
-
-Recall
-
-F1-score
-
-ROC-AUC
-
-The best-performing model is saved as:
-
-models/best_model.joblib
-⚙️ Setup Instructions
-1️⃣ Clone Repository
+### 1️⃣ Clone Repository & Setup Environment
+```bash
 git clone <your-repo-url>
 cd Customer-Churn-Prediction
-2️⃣ Create Virtual Environment
-python3 -m venv .venv
+
+# (Optional) Local virtual environment
+python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-🔁 DVC Pipeline
-Initialize DVC
-dvc init
-Run Full Pipeline
-dvc repro
+```
 
-This runs:
+### 2️⃣ Run Full Pipeline via Airflow (Docker)
+The entire pipeline is orchestrated by Apache Airflow. Both Airflow and the API are dockerized.
 
-Data ingestion
+**Start the Docker environment:**
+```bash
+docker compose up --build -d
+```
+This spins up:
+1. **Airflow Webserver** at `http://localhost:8080` (Username: `admin` | Password: `admin` based on default standalone setups).
+2. **FastAPI App** at `http://localhost:8000`
 
-Preprocessing
+**Trigger Pipeline:**
+1. Go to `http://localhost:8080`
+2. Find the DAG **`churn_prediction_pipeline`**
+3. Click "Trigger DAG" to run the end-to-end ML lifecycle (Ingest -> Preprocess -> Train -> Evaluate).
 
-Model training
+### 3️⃣ Stopping and Restarting the Environment
+**To stop the running environment (e.g., when you are done for the day):**
+```bash
+docker compose down
+```
+*(This gracefully stops and removes the running containers, but your databases and models are persisted in the local directories!)*
 
-Evaluation
+**To restart the project when you reopen it another day:**
+```bash
+docker compose up -d
+```
+This simply recreates and resumes the Airflow and API containers in the background automatically.
 
-Generated Outputs
+### 4️⃣ MLflow & DagsHub Tracking
+Experiment tracking is configured directly to DagsHub using MLflow.
+Check the training logs, parameters, and metrics dynamically at your remote DagsHub repository's MLflow Tracking UI.
 
-models/best_model.joblib
+---
 
-reports/metrics.json
+## 🌐 API Access (FastAPI)
+Once the models are generated by the pipeline, the API container mounts them to serve predictions.
 
-reports/confusion_matrix.png
+**Swagger UI:**
+👉 [http://localhost:8000/docs](http://localhost:8000/docs)
 
-reports/roc_curve.png
+**Health Check:**
+```bash
+curl http://localhost:8000/health
+```
 
-📊 MLflow Experiment Tracking
-Start MLflow UI
-mlflow ui
+**Predict Endpoint:**
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/predict' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "gender": 1,
+  "SeniorCitizen": 0,
+  "Partner": 1,
+  "Dependents": 0,
+  "tenure": 25.0,
+  "PhoneService": 1,
+  "MultipleLines": 0,
+  "InternetService": 1,
+  "OnlineSecurity": 0,
+  "OnlineBackup": 1,
+  "DeviceProtection": 0,
+  "TechSupport": 1,
+  "StreamingTV": 1,
+  "StreamingMovies": 1,
+  "Contract": 1,
+  "PaperlessBilling": 1,
+  "PaymentMethod": 2,
+  "MonthlyCharges": 65.5,
+  "TotalCharges": 1600.5
+}'
+```
 
-Open in browser:
-
-http://localhost:5000
-
-MLflow logs:
-
-Model parameters
-
-Performance metrics
-
-Model comparisons
-
-Experiment history
-
-🐳 Docker – Run API in Container
-Build Docker Image
-docker build -t churn-api .
-Run Container
-docker run -d --name churn_api -p 8000:8000 churn-api
-🌐 API Access
-Swagger UI
-http://localhost:8000/docs
-Health Check
-GET /health
-
-Response:
-
+**Response:**
+```json
 {
-  "status": "ok",
-  "model_loaded": true
+  "churn_probability": 0.12,
+  "prediction": "No",
+  "message": "This customer is likely to stay."
 }
-Predict Endpoint
-POST /predict
+```
 
-Request:
-
-{
-  "features": [0.5, 1.2, 3.4, ...]
-}
-
-Response:
-
-{
-  "churn_probability": 0.82,
-  "prediction": "Yes"
-}
-🌊 Airflow Orchestration
-
-The DAG is located in:
-
-airflow_dags/churn_dag.py
-
-To start Airflow (Docker-based):
-
-docker compose -f airflow/docker-compose.airflow.yaml up -d
-
-Access UI:
-
-http://localhost:8080
-
-Login:
-
-Username: admin
-
-Password: admin
-
-The DAG executes the full DVC pipeline automatically.
-
-📦 Docker Compose (Optional – Full Stack)
-
-If using full stack:
-
-docker compose up --build
-
-This runs:
-
-MLflow server
-
-FastAPI service
-
-📊 Reproducibility
-
-The entire project can be reproduced using:
-
-dvc repro
-docker build .
-docker run ...
-
-All dependencies are pinned in requirements.txt.
-
-🔐 Production-Ready Features
-
-Modular pipeline
-
-Experiment tracking
-
-Containerized deployment
-
-Workflow automation
-
-Versioned datasets
-
-Model artifact management
-
-🎯 Demo Steps (5 Minutes)
-
-Show project structure
-
-Run dvc repro
-
-Show MLflow experiments
-
-Start Docker API
-
-Call /predict endpoint
-
-Trigger Airflow DAG
-
-👩‍💻 Author
+## 👩‍� Authors & Acknowledgments
+Built to demonstrate a fully functional, containerized End-to-End MLOps pipeline.
