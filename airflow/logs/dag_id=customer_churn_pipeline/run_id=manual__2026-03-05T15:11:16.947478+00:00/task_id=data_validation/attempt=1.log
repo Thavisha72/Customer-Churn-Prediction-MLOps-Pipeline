@@ -1,0 +1,17 @@
+[2026-03-05T15:11:35.268+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-05T15:11:35.305+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: customer_churn_pipeline.data_validation manual__2026-03-05T15:11:16.947478+00:00 [queued]>
+[2026-03-05T15:11:35.320+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: customer_churn_pipeline.data_validation manual__2026-03-05T15:11:16.947478+00:00 [queued]>
+[2026-03-05T15:11:35.321+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-05T15:11:35.354+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): data_validation> on 2026-03-05 15:11:16.947478+00:00
+[2026-03-05T15:11:35.362+0000] {standard_task_runner.py:64} INFO - Started process 958 to run task
+[2026-03-05T15:11:35.368+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'customer_churn_pipeline', 'data_validation', 'manual__2026-03-05T15:11:16.947478+00:00', '--job-id', '26', '--raw', '--subdir', 'DAGS_FOLDER/churn_dag.py', '--cfg-path', '/tmp/tmplu5nijkh']
+[2026-03-05T15:11:35.372+0000] {standard_task_runner.py:91} INFO - Job 26: Subtask data_validation
+[2026-03-05T15:11:35.454+0000] {task_command.py:426} INFO - Running <TaskInstance: customer_churn_pipeline.data_validation manual__2026-03-05T15:11:16.947478+00:00 [running]> on host a41167c236d9
+[2026-03-05T15:11:35.582+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='customer_churn_pipeline' AIRFLOW_CTX_TASK_ID='data_validation' AIRFLOW_CTX_EXECUTION_DATE='2026-03-05T15:11:16.947478+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-05T15:11:16.947478+00:00'
+[2026-03-05T15:11:35.586+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-05T15:11:36.380+0000] {python.py:237} INFO - Done. Returned value was: None
+[2026-03-05T15:11:36.382+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-05T15:11:36.387+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=customer_churn_pipeline, task_id=data_validation, run_id=manual__2026-03-05T15:11:16.947478+00:00, execution_date=20260305T151116, start_date=20260305T151135, end_date=20260305T151136
+[2026-03-05T15:11:36.427+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 0
+[2026-03-05T15:11:36.459+0000] {taskinstance.py:3503} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-03-05T15:11:36.469+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

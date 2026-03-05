@@ -1,0 +1,141 @@
+[2026-03-05T08:36:06.422+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-05T08:36:06.456+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: customer_churn_pipeline.model_training manual__2026-03-05T08:35:21.224911+00:00 [queued]>
+[2026-03-05T08:36:06.468+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: customer_churn_pipeline.model_training manual__2026-03-05T08:35:21.224911+00:00 [queued]>
+[2026-03-05T08:36:06.469+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-05T08:36:06.490+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): model_training> on 2026-03-05 08:35:21.224911+00:00
+[2026-03-05T08:36:06.499+0000] {standard_task_runner.py:64} INFO - Started process 272 to run task
+[2026-03-05T08:36:06.502+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'customer_churn_pipeline', 'model_training', 'manual__2026-03-05T08:35:21.224911+00:00', '--job-id', '6', '--raw', '--subdir', 'DAGS_FOLDER/churn_dag.py', '--cfg-path', '/tmp/tmpqsi7pff2']
+[2026-03-05T08:36:06.505+0000] {standard_task_runner.py:91} INFO - Job 6: Subtask model_training
+[2026-03-05T08:36:06.559+0000] {task_command.py:426} INFO - Running <TaskInstance: customer_churn_pipeline.model_training manual__2026-03-05T08:35:21.224911+00:00 [running]> on host 33c6c2c7b340
+[2026-03-05T08:36:06.653+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='customer_churn_pipeline' AIRFLOW_CTX_TASK_ID='model_training' AIRFLOW_CTX_EXECUTION_DATE='2026-03-05T08:35:21.224911+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-05T08:35:21.224911+00:00'
+[2026-03-05T08:36:06.656+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-05T08:38:17.161+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-05T08:38:17.164+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 401, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 235, in execute
+    return_value = self.execute_callable()
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 252, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/dags/churn_dag.py", line 90, in model_training
+    _run_python("src/train.py")
+  File "/opt/airflow/dags/churn_dag.py", line 41, in _run_python
+    raise RuntimeError(
+RuntimeError: Failed running src/train.py
+STDOUT:
+                      ❗❗❗ AUTHORIZATION REQUIRED ❗❗❗                      
+
+
+Open the following link in your browser to authorize the client:
+https://dagshub.com/login/oauth/authorize?state=7675b1d5-6cc8-4f68-8eb2-363207d1e3ac&client_id=32b60ba385aa7cecf24046d8195a71c07dd345d9657977863b52e7748e0f0f28&middleman_request_id=1fab210c2c065f72b05eecdeaf4a193901c78883e3985abcbff32bc91c6718a1
+
+
+
+STDERR:
+/home/airflow/.local/lib/python3.12/site-packages/pydantic/_internal/_fields.py:161: UserWarning: Field "model_name" has conflict with protected namespace "model_".
+
+You may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/opt/project/src/train.py", line 36, in <module>
+    dagshub.init(
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/common/init.py", line 86, in init
+    repo_api = RepoAPI(f"{repo_owner}/{repo_name}", host=host)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/common/api/repo.py", line 78, in __init__
+    self.auth = dagshub.auth.get_authenticator(host=host)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 374, in get_authenticator
+    return _get_token_storage(**kwargs).get_authenticator(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 122, in get_authenticator
+    token = self.get_token_object(host, fail_if_no_token, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 187, in get_token_object
+    good_token = oauth.oauth_flow(host, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/oauth.py", line 46, in oauth_flow
+    token = oauth_flow_post(flow_data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/oauth.py", line 116, in oauth_flow_post
+    raise Exception(f"Error while getting OAuth code: HTTP {res.status_code}, Body: {res.json()}")
+                                                                                     ^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/httpx/_models.py", line 764, in json
+    return jsonlib.loads(self.content, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+[2026-03-05T08:38:17.195+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=customer_churn_pipeline, task_id=model_training, run_id=manual__2026-03-05T08:35:21.224911+00:00, execution_date=20260305T083521, start_date=20260305T083606, end_date=20260305T083817
+[2026-03-05T08:38:17.215+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 6 for task model_training (Failed running src/train.py
+STDOUT:
+                      ❗❗❗ AUTHORIZATION REQUIRED ❗❗❗                      
+
+
+Open the following link in your browser to authorize the client:
+https://dagshub.com/login/oauth/authorize?state=7675b1d5-6cc8-4f68-8eb2-363207d1e3ac&client_id=32b60ba385aa7cecf24046d8195a71c07dd345d9657977863b52e7748e0f0f28&middleman_request_id=1fab210c2c065f72b05eecdeaf4a193901c78883e3985abcbff32bc91c6718a1
+
+
+
+STDERR:
+/home/airflow/.local/lib/python3.12/site-packages/pydantic/_internal/_fields.py:161: UserWarning: Field "model_name" has conflict with protected namespace "model_".
+
+You may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/opt/project/src/train.py", line 36, in <module>
+    dagshub.init(
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/common/init.py", line 86, in init
+    repo_api = RepoAPI(f"{repo_owner}/{repo_name}", host=host)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/common/api/repo.py", line 78, in __init__
+    self.auth = dagshub.auth.get_authenticator(host=host)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 374, in get_authenticator
+    return _get_token_storage(**kwargs).get_authenticator(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 122, in get_authenticator
+    token = self.get_token_object(host, fail_if_no_token, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 187, in get_token_object
+    good_token = oauth.oauth_flow(host, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/oauth.py", line 46, in oauth_flow
+    token = oauth_flow_post(flow_data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/oauth.py", line 116, in oauth_flow_post
+    raise Exception(f"Error while getting OAuth code: HTTP {res.status_code}, Body: {res.json()}")
+                                                                                     ^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/httpx/_models.py", line 764, in json
+    return jsonlib.loads(self.content, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+; 272)
+[2026-03-05T08:38:17.242+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 1
+[2026-03-05T08:38:17.269+0000] {taskinstance.py:3503} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-03-05T08:38:17.280+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

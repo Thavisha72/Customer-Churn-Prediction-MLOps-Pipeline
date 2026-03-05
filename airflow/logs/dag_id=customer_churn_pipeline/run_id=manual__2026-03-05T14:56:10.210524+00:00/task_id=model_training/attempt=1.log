@@ -1,0 +1,73 @@
+[2026-03-05T14:56:58.275+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-05T14:56:58.328+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: customer_churn_pipeline.model_training manual__2026-03-05T14:56:10.210524+00:00 [queued]>
+[2026-03-05T14:56:58.345+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: customer_churn_pipeline.model_training manual__2026-03-05T14:56:10.210524+00:00 [queued]>
+[2026-03-05T14:56:58.346+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-05T14:56:58.378+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): model_training> on 2026-03-05 14:56:10.210524+00:00
+[2026-03-05T14:56:58.393+0000] {standard_task_runner.py:64} INFO - Started process 523 to run task
+[2026-03-05T14:56:58.401+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'customer_churn_pipeline', 'model_training', 'manual__2026-03-05T14:56:10.210524+00:00', '--job-id', '14', '--raw', '--subdir', 'DAGS_FOLDER/churn_dag.py', '--cfg-path', '/tmp/tmp8o1s5yj7']
+[2026-03-05T14:56:58.408+0000] {standard_task_runner.py:91} INFO - Job 14: Subtask model_training
+[2026-03-05T14:56:58.559+0000] {task_command.py:426} INFO - Running <TaskInstance: customer_churn_pipeline.model_training manual__2026-03-05T14:56:10.210524+00:00 [running]> on host a41167c236d9
+[2026-03-05T14:56:58.776+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='customer_churn_pipeline' AIRFLOW_CTX_TASK_ID='model_training' AIRFLOW_CTX_EXECUTION_DATE='2026-03-05T14:56:10.210524+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-05T14:56:10.210524+00:00'
+[2026-03-05T14:56:58.781+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-05T14:57:12.124+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-05T14:57:12.127+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 401, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 235, in execute
+    return_value = self.execute_callable()
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 252, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/dags/churn_dag.py", line 90, in model_training
+    _run_python("src/train.py")
+  File "/opt/airflow/dags/churn_dag.py", line 41, in _run_python
+    raise RuntimeError(
+RuntimeError: Failed running src/train.py
+STDOUT:
+The token is not a valid DagsHub token
+
+STDERR:
+/home/airflow/.local/lib/python3.12/site-packages/pydantic/_internal/_fields.py:161: UserWarning: Field "model_name" has conflict with protected namespace "model_".
+
+You may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/opt/project/src/train.py", line 46, in <module>
+    dagshub.auth.add_app_token(DAGSHUB_TOKEN)
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 433, in add_app_token
+    _get_token_storage(**kwargs).add_token(token_obj, host)
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 91, in add_token
+    raise InvalidTokenError
+dagshub.auth.tokens.InvalidTokenError: <exception str() failed>
+
+[2026-03-05T14:57:12.144+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=customer_churn_pipeline, task_id=model_training, run_id=manual__2026-03-05T14:56:10.210524+00:00, execution_date=20260305T145610, start_date=20260305T145658, end_date=20260305T145712
+[2026-03-05T14:57:12.161+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 14 for task model_training (Failed running src/train.py
+STDOUT:
+The token is not a valid DagsHub token
+
+STDERR:
+/home/airflow/.local/lib/python3.12/site-packages/pydantic/_internal/_fields.py:161: UserWarning: Field "model_name" has conflict with protected namespace "model_".
+
+You may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/opt/project/src/train.py", line 46, in <module>
+    dagshub.auth.add_app_token(DAGSHUB_TOKEN)
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 433, in add_app_token
+    _get_token_storage(**kwargs).add_token(token_obj, host)
+  File "/home/airflow/.local/lib/python3.12/site-packages/dagshub/auth/tokens.py", line 91, in add_token
+    raise InvalidTokenError
+dagshub.auth.tokens.InvalidTokenError: <exception str() failed>
+; 523)
+[2026-03-05T14:57:12.215+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 1
+[2026-03-05T14:57:12.237+0000] {taskinstance.py:3503} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-03-05T14:57:12.250+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

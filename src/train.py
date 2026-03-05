@@ -1,6 +1,24 @@
+import os
 import json
 from pathlib import Path
+import tempfile
 
+PROJECT_ROOT = os.path.abspath(".")
+MLRUNS_DIR = os.path.join(PROJECT_ROOT, "mlruns")
+
+# Use SQLite for tracking
+os.environ["MLFLOW_TRACKING_URI"] = f"sqlite:///{MLRUNS_DIR}/mlruns.db"
+
+# Use local folder for all artifacts
+os.environ["MLFLOW_ARTIFACT_URI"] = f"file://{MLRUNS_DIR}"
+
+# Force temp files into a writable folder
+tempfile.tempdir = os.path.join(MLRUNS_DIR, "tmp")
+os.makedirs(tempfile.tempdir, exist_ok=True)
+
+# -------------------------
+# Imports
+# -------------------------
 import joblib
 import mlflow
 import mlflow.sklearn
@@ -10,25 +28,29 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 
-
 # -------------------------
 # Paths
 # -------------------------
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
-MODELS_DIR = PROJECT_ROOT / "models"
-REPORTS_DIR = PROJECT_ROOT / "reports"
-MLRUNS_DIR = PROJECT_ROOT / "mlruns"
+ROOT_DIR = Path(__file__).resolve().parent.parent
+PROCESSED_DIR = ROOT_DIR / "data" / "processed"
+MODELS_DIR = ROOT_DIR / "models"
+REPORTS_DIR = ROOT_DIR / "reports"
+MLRUNS_DIR = ROOT_DIR / "mlruns"
 
-
-# -------------------------
-# MLflow setup (local folder to avoid /mlflow permission error)
-# -------------------------
+# Ensure directories exist
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
+REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 MLRUNS_DIR.mkdir(parents=True, exist_ok=True)
-mlflow.set_tracking_uri(f"file:{MLRUNS_DIR}")
+
+# -------------------------
+# MLflow setup
+# -------------------------
+mlflow.set_tracking_uri(f"sqlite:///{MLRUNS_DIR}/mlruns.db")
 mlflow.set_experiment("customer_churn")
 
-
+# -------------------------
+# Load preprocessed data
+# -------------------------
 def load_preprocessed():
     X_train = pd.read_csv(PROCESSED_DIR / "X_train.csv")
     X_test = pd.read_csv(PROCESSED_DIR / "X_test.csv")
@@ -36,11 +58,10 @@ def load_preprocessed():
     y_train_df = pd.read_csv(PROCESSED_DIR / "y_train.csv")
     y_test_df = pd.read_csv(PROCESSED_DIR / "y_test.csv")
 
-    # y should be a Series
     y_train = y_train_df["Churn"] if "Churn" in y_train_df.columns else y_train_df.iloc[:, 0]
     y_test = y_test_df["Churn"] if "Churn" in y_test_df.columns else y_test_df.iloc[:, 0]
 
-    # If labels are strings, convert to 0/1
+    # Convert labels if needed
     if y_train.dtype == "object":
         y_train = y_train.map({"No": 0, "Yes": 1}).astype(int)
     if y_test.dtype == "object":
@@ -48,10 +69,11 @@ def load_preprocessed():
 
     return X_train, y_train, X_test, y_test
 
-
+# -------------------------
+# Metrics computation
+# -------------------------
 def compute_metrics(model, X, y):
     y_pred = model.predict(X)
-
     roc = None
     if hasattr(model, "predict_proba"):
         y_proba = model.predict_proba(X)[:, 1]
@@ -65,11 +87,10 @@ def compute_metrics(model, X, y):
         "roc_auc": roc,
     }
 
-
+# -------------------------
+# Training loop
+# -------------------------
 def main():
-    MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-
     X_train, y_train, X_test, y_test = load_preprocessed()
 
     candidates = [
@@ -86,7 +107,7 @@ def main():
                 n_jobs=-1,
                 class_weight="balanced_subsample",
             ),
-            {"n_estimators": 300, "random_state": 42, "class_weight": "balanced_subsample"},
+            {"n_estimators": 300, "random_state": 42},
         ),
         (
             "gradient_boosting",
@@ -102,44 +123,54 @@ def main():
 
     for name, model, params in candidates:
         with mlflow.start_run(run_name=name):
+            # Log parameters
             mlflow.log_params(params)
 
+            # Train model
             model.fit(X_train, y_train)
 
+            # Compute and log metrics
             metrics = compute_metrics(model, X_test, y_test)
-            # log only non-None metrics
             mlflow.log_metrics({k: v for k, v in metrics.items() if v is not None})
 
-            # ✅ log model to MLflow (new API style)
-            mlflow.sklearn.log_model(model, name="model")
+            # -------------------------
+            # Safe MLflow model logging (skops)
+            # -------------------------
+            mlflow.sklearn.log_model(
+                model,
+                artifact_path="model"
+            )
 
             results.append({"model": name, **metrics})
 
-            # choose best by roc_auc if available, else f1
+            # Track best model
             score = metrics["roc_auc"] if metrics["roc_auc"] is not None else metrics["f1"]
             if score > best_score:
                 best_score = score
                 best_name = name
                 best_model = model
 
-    # ✅ Save best model for DVC output
+    # -------------------------
+    # Save best model locally
+    # -------------------------
     best_path = MODELS_DIR / "best_model.joblib"
     joblib.dump(best_model, best_path)
 
-    # Save report
     report_path = REPORTS_DIR / "model_results.json"
-    with open(report_path, "w", encoding="utf-8") as f:
+    with open(report_path, "w") as f:
         json.dump(
-            {"best_model": best_name, "best_score": best_score, "results": results},
+            {
+                "best_model": best_name,
+                "best_score": best_score,
+                "results": results
+            },
             f,
             indent=2,
         )
 
-    print(f"[training] Best model: {best_name} | score={best_score:.4f}")
-    print(f"[training] Saved -> {best_path}")
-    print(f"[training] Saved -> {report_path}")
-    print(f"[mlflow] Tracking dir -> {MLRUNS_DIR}")
-
+    print(f"Best model: {best_name} | score={best_score:.4f}")
+    print(f"Saved model -> {best_path}")
+    print(f"Saved report -> {report_path}")
 
 if __name__ == "__main__":
     main()

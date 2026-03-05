@@ -68,8 +68,8 @@ stages:
       isexec: true
     - path: src/train.py
       hash: md5
-      md5: d097d8f8db7e7e0e5e09e7c895a34ce5
-      size: 4579
+      md5: b4bc25bb86f97c37246512d0832bc873
+      size: 5368
       isexec: true
     outs:
     - path: models/best_model.joblib

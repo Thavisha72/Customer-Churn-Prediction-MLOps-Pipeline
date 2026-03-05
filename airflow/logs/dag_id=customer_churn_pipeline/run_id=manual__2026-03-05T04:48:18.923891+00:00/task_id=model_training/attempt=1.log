@@ -1,0 +1,55 @@
+[2026-03-05T04:48:52.408+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-05T04:48:52.459+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: customer_churn_pipeline.model_training manual__2026-03-05T04:48:18.923891+00:00 [queued]>
+[2026-03-05T04:48:52.470+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: customer_churn_pipeline.model_training manual__2026-03-05T04:48:18.923891+00:00 [queued]>
+[2026-03-05T04:48:52.472+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-05T04:48:52.494+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): model_training> on 2026-03-05 04:48:18.923891+00:00
+[2026-03-05T04:48:52.505+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'customer_churn_pipeline', 'model_training', 'manual__2026-03-05T04:48:18.923891+00:00', '--job-id', '23', '--raw', '--subdir', 'DAGS_FOLDER/churn_dag.py', '--cfg-path', '/tmp/tmpjl3ldppg']
+[2026-03-05T04:48:52.502+0000] {standard_task_runner.py:64} INFO - Started process 599 to run task
+[2026-03-05T04:48:52.508+0000] {standard_task_runner.py:91} INFO - Job 23: Subtask model_training
+[2026-03-05T04:48:52.623+0000] {task_command.py:426} INFO - Running <TaskInstance: customer_churn_pipeline.model_training manual__2026-03-05T04:48:18.923891+00:00 [running]> on host ab1186d5e05a
+[2026-03-05T04:48:52.745+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='customer_churn_pipeline' AIRFLOW_CTX_TASK_ID='model_training' AIRFLOW_CTX_EXECUTION_DATE='2026-03-05T04:48:18.923891+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-05T04:48:18.923891+00:00'
+[2026-03-05T04:48:52.747+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-05T04:48:54.671+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-05T04:48:54.674+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 401, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 235, in execute
+    return_value = self.execute_callable()
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 252, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/dags/churn_dag.py", line 90, in model_training
+    _run_python("src/train.py")
+  File "/opt/airflow/dags/churn_dag.py", line 41, in _run_python
+    raise RuntimeError(
+RuntimeError: Failed running src/train.py
+STDOUT:
+
+STDERR:
+Traceback (most recent call last):
+  File "/opt/project/src/train.py", line 7, in <module>
+    import mlflow
+ModuleNotFoundError: No module named 'mlflow'
+
+[2026-03-05T04:48:54.694+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=customer_churn_pipeline, task_id=model_training, run_id=manual__2026-03-05T04:48:18.923891+00:00, execution_date=20260305T044818, start_date=20260305T044852, end_date=20260305T044854
+[2026-03-05T04:48:54.712+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 23 for task model_training (Failed running src/train.py
+STDOUT:
+
+STDERR:
+Traceback (most recent call last):
+  File "/opt/project/src/train.py", line 7, in <module>
+    import mlflow
+ModuleNotFoundError: No module named 'mlflow'
+; 599)
+[2026-03-05T04:48:54.745+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 1
+[2026-03-05T04:48:54.793+0000] {taskinstance.py:3503} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-03-05T04:48:54.811+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

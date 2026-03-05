@@ -1,0 +1,55 @@
+[2026-03-05T04:05:38.978+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-05T04:05:39.010+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: customer_churn_pipeline.feature_engineering manual__2026-03-05T04:05:07.689505+00:00 [queued]>
+[2026-03-05T04:05:39.025+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: customer_churn_pipeline.feature_engineering manual__2026-03-05T04:05:07.689505+00:00 [queued]>
+[2026-03-05T04:05:39.027+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-05T04:05:39.057+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): feature_engineering> on 2026-03-05 04:05:07.689505+00:00
+[2026-03-05T04:05:39.069+0000] {standard_task_runner.py:64} INFO - Started process 335 to run task
+[2026-03-05T04:05:39.081+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'customer_churn_pipeline', 'feature_engineering', 'manual__2026-03-05T04:05:07.689505+00:00', '--job-id', '19', '--raw', '--subdir', 'DAGS_FOLDER/churn_dag.py', '--cfg-path', '/tmp/tmpq3p35iu7']
+[2026-03-05T04:05:39.090+0000] {standard_task_runner.py:91} INFO - Job 19: Subtask feature_engineering
+[2026-03-05T04:05:39.194+0000] {task_command.py:426} INFO - Running <TaskInstance: customer_churn_pipeline.feature_engineering manual__2026-03-05T04:05:07.689505+00:00 [running]> on host ab1186d5e05a
+[2026-03-05T04:05:39.315+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='customer_churn_pipeline' AIRFLOW_CTX_TASK_ID='feature_engineering' AIRFLOW_CTX_EXECUTION_DATE='2026-03-05T04:05:07.689505+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-05T04:05:07.689505+00:00'
+[2026-03-05T04:05:39.317+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-05T04:05:41.559+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-05T04:05:41.561+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 401, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 235, in execute
+    return_value = self.execute_callable()
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 252, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/dags/churn_dag.py", line 82, in feature_engineering
+    _run_python("src/preprocessing.py")
+  File "/opt/airflow/dags/churn_dag.py", line 41, in _run_python
+    raise RuntimeError(
+RuntimeError: Failed running src/preprocessing.py
+STDOUT:
+
+STDERR:
+Traceback (most recent call last):
+  File "/opt/project/src/preprocessing.py", line 3, in <module>
+    from sklearn.model_selection import train_test_split
+ModuleNotFoundError: No module named 'sklearn'
+
+[2026-03-05T04:05:41.618+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=customer_churn_pipeline, task_id=feature_engineering, run_id=manual__2026-03-05T04:05:07.689505+00:00, execution_date=20260305T040507, start_date=20260305T040539, end_date=20260305T040541
+[2026-03-05T04:05:41.652+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 19 for task feature_engineering (Failed running src/preprocessing.py
+STDOUT:
+
+STDERR:
+Traceback (most recent call last):
+  File "/opt/project/src/preprocessing.py", line 3, in <module>
+    from sklearn.model_selection import train_test_split
+ModuleNotFoundError: No module named 'sklearn'
+; 335)
+[2026-03-05T04:05:41.673+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 1
+[2026-03-05T04:05:41.702+0000] {taskinstance.py:3503} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-03-05T04:05:41.713+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

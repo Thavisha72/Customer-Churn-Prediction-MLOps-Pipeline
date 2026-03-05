@@ -6,11 +6,17 @@ services:
       - "8080:8080"
     environment:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - _PIP_ADDITIONAL_REQUIREMENTS=dagshub scikit-learn pandas joblib mlflow
+      - DAGSHUB_TOKEN="df3dc9bcb6e78359fccce9456c713df3b8d406f8"
+      - DAGSHUB_ALLOW_OAUTH="false"
+    
+    
     volumes:
       - ./airflow_dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       - ./:/opt/project
+      - ./mlruns:/mlruns
     command: >
       bash -c "
       airflow db migrate &&
