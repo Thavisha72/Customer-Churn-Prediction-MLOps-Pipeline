@@ -92,7 +92,7 @@ The entire pipeline is orchestrated by Apache Airflow. Both Airflow and the API 
 docker compose up --build -d
 ```
 This spins up:
-1. **Airflow Webserver** at `http://localhost:8080` (Username: `admin` | Password: `admin` based on default standalone setups).
+1. **Airflow Webserver** at `http://localhost:8080` (Username: `admin1` | Password: `admin` based on default standalone setups).
 2. **FastAPI App** at `http://localhost:8000`
 
 **Trigger Pipeline:**
@@ -100,20 +100,45 @@ This spins up:
 2. Find the DAG **`churn_prediction_pipeline`**
 3. Click "Trigger DAG" to run the end-to-end ML lifecycle (Ingest -> Preprocess -> Train -> Evaluate).
 
-### 3️⃣ Stopping and Restarting the Environment
+### 3️⃣ Managing Services Separately
+Sometimes you only need to restart the API (e.g., after training a new model) or Airflow independently. Here is how to manage the services individually using Docker Compose.
+
+#### FastAPI Service (Port 8000)
+**To build and start the API in the background:**
+```bash
+docker compose up -d --build api
+```
+**To stop the API only (keeps Airflow running):**
+```bash
+docker compose stop api
+```
+**To restart the API (if model/code changes):**
+```bash
+docker compose restart api
+```
+
+#### Airflow Service (Port 8080)
+**To build and start Airflow in the background:**
+```bash
+docker compose up -d --build airflow
+```
+**To stop Airflow only:**
+```bash
+docker compose stop airflow
+```
+**To restart Airflow:**
+```bash
+docker compose restart airflow
+```
+
+### 4️⃣ Stopping the Entire Environment
 **To stop the running environment (e.g., when you are done for the day):**
 ```bash
 docker compose down
 ```
-*(This gracefully stops and removes the running containers, but your databases and models are persisted in the local directories!)*
+*(This gracefully stops and removes all running containers, but your databases and models are safely persisted in the local directories!)*
 
-**To restart the project when you reopen it another day:**
-```bash
-docker compose up -d
-```
-This simply recreates and resumes the Airflow and API containers in the background automatically.
-
-### 4️⃣ MLflow & DagsHub Tracking
+### 5️⃣ MLflow & DagsHub Tracking
 Experiment tracking is configured directly to DagsHub using MLflow.
 Check the training logs, parameters, and metrics dynamically at your remote DagsHub repository's MLflow Tracking UI.
 

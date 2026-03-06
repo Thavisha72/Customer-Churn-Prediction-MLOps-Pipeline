@@ -28,7 +28,7 @@ dagshub.init(
     mlflow=True,
 )
 
-mlflow.set_experiment("Churn-Prediction")
+mlflow.set_experiment("customer_churn")
 
 
 def train_models():
@@ -73,7 +73,7 @@ def train_models():
             mlflow.log_metric("recall", rec)
             mlflow.log_metric("f1_score", f1)
             mlflow.log_metric("roc_auc", auc)
-            mlflow.sklearn.log_model(model, name)
+            mlflow.sklearn.log_model(model, name, registered_model_name=name)
 
             print(f"  Accuracy: {acc:.3f}")
             print(f"  F1 Score: {f1:.3f}")
