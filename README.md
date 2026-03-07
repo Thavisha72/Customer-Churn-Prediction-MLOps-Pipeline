@@ -91,6 +91,19 @@ The entire pipeline is orchestrated by Apache Airflow. Both Airflow and the API 
 ```bash
 docker compose up --build -d
 ```
+**Need to change the Password of the airflow flow after building**
+```bash
+
+docker-compose run --rm airflow airflow users create \
+    --username admin2 \
+    --password admin \
+    --firstname Admin \
+    --lastname User \
+    --role Admin \
+    --email admin2@example.com
+
+```
+
 This spins up:
 1. **Airflow Webserver** at `http://localhost:8080` (Username: `admin1` | Password: `admin` based on default standalone setups).
 2. **FastAPI App** at `http://localhost:8000`
@@ -129,6 +142,19 @@ docker compose stop airflow
 **To restart Airflow:**
 ```bash
 docker compose restart airflow
+```
+
+**Need to change the Password of the airflow flow after building**
+```bash
+
+docker-compose run --rm airflow airflow users create \
+    --username admin2 \
+    --password admin \
+    --firstname Admin \
+    --lastname User \
+    --role Admin \
+    --email admin2@example.com
+
 ```
 
 ### 4️⃣ Stopping the Entire Environment
